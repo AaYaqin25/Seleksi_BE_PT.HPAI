@@ -1,0 +1,12 @@
+{
+    "data": {
+        "id": 479,
+        "name": "Ahmad",
+        "email": "ahmad@gmail.com",
+        "password": "$2b$10$.xCbsF.H9sdmEIyoCXyHpOaQP.Eiq3Cd6YyJBNayTpR9AF1E83a2O",
+        "role": "admin",
+        "createdAt": "2023-04-04T09:45:18.000Z",
+        "updatedAt": "2023-04-04T09:45:18.000Z"
+    },
+    "success": true
+}

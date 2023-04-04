@@ -7,7 +7,7 @@ const { encodeToken, decodeToken } = require('../helpers/jwt.js');
 const { isLoggedIn } = require('../helpers/middleware.js');
 const saltRounds = 10;
 
-router.get('/users', async function (req, res, next) {
+router.get('/users', isLoggedIn, async function (req, res, next) {
   try {
     const getUser = await models.User.findAll();
     res.status(200).json(new Response(getUser));
@@ -17,7 +17,7 @@ router.get('/users', async function (req, res, next) {
   }
 });
 
-router.post('/users', async function (req, res, next) {
+router.post('/users', isLoggedIn, async function (req, res, next) {
   try {
     const { name, email, password, role } = req.body;
     const checkEmailValid = checkEmail(email);
@@ -39,7 +39,7 @@ router.post('/users', async function (req, res, next) {
   }
 });
 
-router.get('/users/:id', async function (req, res, next) {
+router.get('/users/:id', isLoggedIn, async function (req, res, next) {
   try {
     const getOneUser = await models.User.findOne({
       where: {
@@ -53,7 +53,7 @@ router.get('/users/:id', async function (req, res, next) {
   }
 });
 
-router.delete('/users/:id', async function (req, res, next) {
+router.delete('/users/:id', isLoggedIn, async function (req, res, next) {
   try {
     const deleteUser = await models.User.destroy({
       where: {
@@ -77,12 +77,12 @@ router.post('/login', async function (req, res, next) {
       where: {
         email: email
       }
-    })
+    });
     //check Email exist
-    if (!user) return res.status(401).json(new Response('Email  is wrong', false));
+    if (!user || user.email !== email) return res.status(401).json(new Response('Email or password is wrong', false));
     // check Password
     const comparePassword = compareSync(password, user.password);
-    if (!comparePassword) return res.status(401).json(new Response('password is wrong', false));
+    if (!comparePassword) return res.status(401).json(new Response('Email or password is wrong', false));
     const token = encodeToken({ id: user.id, name: user.name });
     res.status(201).json(new Response({ id: user.id, name: user.name, token: token }));
   } catch (error) {
@@ -91,7 +91,7 @@ router.post('/login', async function (req, res, next) {
   }
 });
 
-router.get('/logout', async function (req, res, next) {
+router.get('/logout', isLoggedIn, async function (req, res, next) {
   try {
     const bearerToken = req.get('Authorization');
     const token = bearerToken?.split(' ')[1];
